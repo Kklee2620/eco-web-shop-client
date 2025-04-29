@@ -64,7 +64,7 @@ const FAQ: React.FC = () => {
     {
       id: '8',
       question: 'Do you offer wholesale options?',
-      answer: 'Yes, we offer wholesale options for businesses interested in our products. Please contact our sales team at wholesale@ecoshop.com with information about your business and which products you're interested in.',
+      answer: "Yes, we offer wholesale options for businesses interested in our products. Please contact our sales team at wholesale@ecoshop.com with information about your business and which products you're interested in.",
       category: 'business',
     },
   ];
