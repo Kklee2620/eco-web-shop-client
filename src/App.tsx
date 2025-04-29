@@ -16,6 +16,15 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Account from "@/pages/Account";
 import NotFound from "@/pages/NotFound";
+import Products from "@/pages/Products";
+import BlogPage from "@/pages/BlogPage";
+import AboutUs from "@/pages/AboutUs";
+import Contact from "@/pages/Contact";
+import FAQ from "@/pages/FAQ";
+import Shipping from "@/pages/Shipping";
+import Returns from "@/pages/Returns";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
 
 // Create a client outside of the component
 const queryClient = new QueryClient();
@@ -31,12 +40,21 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
                 <Route path="/product/:slug" element={<ProductDetail />} />
                 <Route path="/category/:slug" element={<Category />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/account" element={<Account />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/about" element={<AboutUs />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/shipping" element={<Shipping />} />
+                <Route path="/returns" element={<Returns />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
