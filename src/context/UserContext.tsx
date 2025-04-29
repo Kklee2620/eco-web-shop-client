@@ -6,7 +6,8 @@ import { toast } from "sonner";
 interface UserContextType {
   user: UserProfileSummary | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (credentials: { email: string; password: string }) => Promise<boolean>;
+  register: (userData: { name: string; email: string; password: string }) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
@@ -39,6 +40,21 @@ const mockLogin = (email: string, password: string): Promise<UserProfileSummary>
   });
 };
 
+const mockRegister = (name: string, email: string, password: string): Promise<UserProfileSummary> => {
+  // Simulate API delay
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // In a real app, we would create a new user account here
+      resolve({
+        isLoggedIn: true,
+        userId: "new-user",
+        name: name,
+        avatarUrl: `https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=4D7C0F&color=fff`
+      });
+    }, 800);
+  });
+};
+
 const mockLogout = (): Promise<void> => {
   return Promise.resolve();
 };
@@ -65,16 +81,32 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadUser();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (credentials: { email: string; password: string }): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const userData = await mockLogin(email, password);
+      const userData = await mockLogin(credentials.email, credentials.password);
       setUser(userData);
       toast.success("Login successful!");
       return true;
     } catch (error) {
       console.error("Login failed:", error);
       toast.error("Login failed. Please check your credentials.");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (userData: { name: string; email: string; password: string }): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      const newUser = await mockRegister(userData.name, userData.email, userData.password);
+      setUser(newUser);
+      toast.success("Registration successful!");
+      return true;
+    } catch (error) {
+      console.error("Registration failed:", error);
+      toast.error("Registration failed. Please try again.");
       return false;
     } finally {
       setIsLoading(false);
@@ -96,7 +128,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <UserContext.Provider value={{ user, isLoading, login, logout }}>
+    <UserContext.Provider value={{ user, isLoading, login, register, logout }}>
       {children}
     </UserContext.Provider>
   );

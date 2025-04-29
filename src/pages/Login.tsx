@@ -38,19 +38,21 @@ const Login: React.FC = () => {
   
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // Mock login - in a real app this would call to auth API
-      await login({
+      // Pass credentials object to login function
+      const success = await login({
         email: values.email,
         password: values.password
       });
       
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-        variant: "default",
-      });
-      
-      navigate('/');
+      if (success) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+          variant: "default",
+        });
+        
+        navigate('/');
+      }
     } catch (error) {
       console.error("Login error:", error);
       toast({

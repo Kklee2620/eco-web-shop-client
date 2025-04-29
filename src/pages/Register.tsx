@@ -45,20 +45,21 @@ const Register: React.FC = () => {
   
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // Mock registration - in a real app this would call to auth API
-      await register({
+      const success = await register({
         name: values.name,
         email: values.email,
         password: values.password
       });
       
-      toast({
-        title: "Registration successful",
-        description: "Your account has been created.",
-        variant: "default",
-      });
-      
-      navigate('/');
+      if (success) {
+        toast({
+          title: "Registration successful",
+          description: "Your account has been created.",
+          variant: "default",
+        });
+        
+        navigate('/');
+      }
     } catch (error) {
       console.error("Registration error:", error);
       toast({
