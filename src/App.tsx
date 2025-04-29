@@ -25,6 +25,7 @@ import Shipping from "@/pages/Shipping";
 import Returns from "@/pages/Returns";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
+import Checkout from "@/pages/Checkout";
 
 // Create a client outside of the component
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
                 <Route path="/returns" element={<Returns />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/checkout" element={<Checkout />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
