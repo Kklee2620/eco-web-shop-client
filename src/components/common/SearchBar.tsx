@@ -17,30 +17,30 @@ const mockSearchSuggestions = async (query: string): Promise<SearchSuggestion[]>
   
   if (!query) return [];
   
-  // Example suggestions
+  // Example suggestions with proper type annotations
   return [
     {
-      type: "product",
+      type: "product" as const,
       id: "1",
       name: "Eco-friendly Water Bottle",
       imageUrl: "https://images.unsplash.com/photo-1602143407151-7111542de6e8",
       url: "/product/eco-friendly-water-bottle"
     },
     {
-      type: "product",
+      type: "product" as const,
       id: "2",
       name: "Bamboo Toothbrush",
       imageUrl: "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04",
       url: "/product/bamboo-toothbrush"
     },
     {
-      type: "category",
+      type: "category" as const,
       id: "3",
       name: "Kitchen",
       url: "/category/kitchen"
     },
     {
-      type: "query",
+      type: "query" as const,
       name: "eco-friendly products",
       url: "/search?q=eco-friendly%20products"
     }
