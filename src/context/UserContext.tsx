@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { UserProfileSummary } from "@/types";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { User, Session } from "@supabase/supabase-js";
 
 interface UserContextType {
   user: UserProfileSummary | null;
@@ -13,84 +15,85 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Mock API functions - will be replaced with real API calls
-const mockFetchUser = (): Promise<UserProfileSummary | null> => {
-  // For initial demo, we'll return not logged in
-  return Promise.resolve({
-    isLoggedIn: false
-  });
-};
-
-const mockLogin = (email: string, password: string): Promise<UserProfileSummary> => {
-  // Simulate API delay
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // Demo validation
-      if (email === "demo@example.com" && password === "password") {
-        resolve({
-          isLoggedIn: true,
-          userId: "user1",
-          name: "Demo User",
-          avatarUrl: "https://ui-avatars.com/api/?name=Demo+User&background=4D7C0F&color=fff"
-        });
-      } else {
-        reject(new Error("Invalid email or password"));
-      }
-    }, 800);
-  });
-};
-
-const mockRegister = (name: string, email: string, password: string): Promise<UserProfileSummary> => {
-  // Simulate API delay
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // In a real app, we would create a new user account here
-      resolve({
-        isLoggedIn: true,
-        userId: "new-user",
-        name: name,
-        avatarUrl: `https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=4D7C0F&color=fff`
-      });
-    }, 800);
-  });
-};
-
-const mockLogout = (): Promise<void> => {
-  return Promise.resolve();
-};
-
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfileSummary | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is already logged in
+  // Initialize authentication state
   useEffect(() => {
-    const loadUser = async () => {
-      setIsLoading(true);
-      try {
-        const userData = await mockFetchUser();
-        setUser(userData);
-      } catch (error) {
-        console.error("Failed to load user:", error);
-        setUser({ isLoggedIn: false });
-      } finally {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        setSession(currentSession);
+        
+        // Update user state based on session
+        if (currentSession?.user) {
+          const { user: authUser } = currentSession;
+          setUser({
+            isLoggedIn: true,
+            userId: authUser.id,
+            name: authUser.user_metadata?.name || "Người dùng",
+            email: authUser.email || "",
+            avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.user_metadata?.name || "User")}&background=4D7C0F&color=fff`
+          });
+        } else {
+          setUser({ isLoggedIn: false });
+        }
+        
+        // Once authentication state is determined, we're no longer loading
         setIsLoading(false);
       }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      
+      // Update user state based on session
+      if (currentSession?.user) {
+        const { user: authUser } = currentSession;
+        setUser({
+          isLoggedIn: true,
+          userId: authUser.id,
+          name: authUser.user_metadata?.name || "Người dùng",
+          email: authUser.email || "",
+          avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.user_metadata?.name || "User")}&background=4D7C0F&color=fff`
+        });
+      } else {
+        setUser({ isLoggedIn: false });
+      }
+      
+      // Once authentication state is determined, we're no longer loading
+      setIsLoading(false);
+    }).catch(error => {
+      console.error("Error fetching session:", error);
+      setUser({ isLoggedIn: false });
+      setIsLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
     };
-    
-    loadUser();
   }, []);
 
   const login = async (credentials: { email: string; password: string }): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const userData = await mockLogin(credentials.email, credentials.password);
-      setUser(userData);
-      toast.success("Login successful!");
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success("Đăng nhập thành công!");
       return true;
-    } catch (error) {
-      console.error("Login failed:", error);
-      toast.error("Login failed. Please check your credentials.");
+    } catch (error: any) {
+      console.error("Đăng nhập thất bại:", error.message);
+      toast.error(error.message || "Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.");
       return false;
     } finally {
       setIsLoading(false);
@@ -100,13 +103,25 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: { name: string; email: string; password: string }): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const newUser = await mockRegister(userData.name, userData.email, userData.password);
-      setUser(newUser);
-      toast.success("Registration successful!");
+      const { data, error } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            name: userData.name,
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success("Đăng ký thành công!");
       return true;
-    } catch (error) {
-      console.error("Registration failed:", error);
-      toast.error("Registration failed. Please try again.");
+    } catch (error: any) {
+      console.error("Đăng ký thất bại:", error.message);
+      toast.error(error.message || "Đăng ký thất bại. Vui lòng thử lại.");
       return false;
     } finally {
       setIsLoading(false);
@@ -116,12 +131,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      await mockLogout();
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw error;
+      }
+      
       setUser({ isLoggedIn: false });
-      toast.success("Logged out successfully");
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast.error("Logout failed. Please try again.");
+      toast.success("Đã đăng xuất thành công");
+    } catch (error: any) {
+      console.error("Đăng xuất thất bại:", error.message);
+      toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
