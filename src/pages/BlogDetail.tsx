@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Calendar, User, Tag, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Tag, Facebook, Twitter, Linkedin, ChevronRight } from 'lucide-react';
 
 interface BlogPost {
   id: string;
@@ -58,7 +57,7 @@ const mockGetPostBySlug = async (slug: string): Promise<BlogPost | null> => {
 
 <h2>4. Sử dụng hộp đựng thực phẩm tái sử dụng</h2>
 
-<p>Hộp đựng thức ăn dùng một lần góp phần đáng kể vào lượng rác thải nhựa. Thay vào đó, bạn có thể sử dụng hộp đựng thực phẩm tái sử dụng làm từ thủy tinh hoặc thép không gỉ. Chúng không chỉ thân thiện với môi trường mà còn an toàn hơn cho sức khỏe, vì nhiều loại nhựa có thể tiết ra các hóa chất độc hại khi tiếp xúc với thực phẩm nóng.</p>
+<p>Hộp đựng thức ăn dùng một lần góp phần đáng kể vào lượng rác thải nhựa. Thay vào đó, bạn có thể sử dụng hộp đựng thực phẩm tái sử dụng làm từ thủy tinh hoặc thép không gỉ. Chúng không chỉ thân thiện với môi trường mà còn an toàn hơn cho sức khỏe, vì nhiều loại nhựa có th�� tiết ra các hóa chất độc hại khi tiếp xúc với thực phẩm nóng.</p>
 
 <h2>5. Chọn sản phẩm không đóng gói hoặc đóng gói tối giản</h2>
 

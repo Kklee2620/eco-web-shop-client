@@ -4,6 +4,7 @@ export interface UserProfileSummary {
   isLoggedIn: boolean;
   userId?: string;
   name?: string;
+  email?: string;
   avatarUrl?: string;
 }
 
