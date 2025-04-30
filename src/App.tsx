@@ -29,6 +29,15 @@ import Privacy from "@/pages/Privacy";
 import Checkout from "@/pages/Checkout";
 import OrderDetail from "@/pages/OrderDetail";
 
+// Admin
+import Admin from "@/pages/Admin";
+import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminProducts from "@/pages/admin/Products";
+import AdminOrders from "@/pages/admin/Orders";
+import AdminUsers from "@/pages/admin/Users";
+import AdminBlog from "@/pages/admin/Blog";
+import AdminSettings from "@/pages/admin/Settings";
+
 // Create a client
 const queryClient = new QueryClient();
 
@@ -61,6 +70,17 @@ const App: React.FC = () => (
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/checkout" element={<Checkout />} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin" element={<Admin />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="products" element={<AdminProducts />} />
+                  <Route path="orders" element={<AdminOrders />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="blog" element={<AdminBlog />} />
+                  <Route path="settings" element={<AdminSettings />} />
+                </Route>
+
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
