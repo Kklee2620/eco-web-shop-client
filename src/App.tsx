@@ -18,6 +18,7 @@ import Account from "@/pages/Account";
 import NotFound from "@/pages/NotFound";
 import Products from "@/pages/Products";
 import BlogPage from "@/pages/BlogPage";
+import BlogDetail from "@/pages/BlogDetail";
 import AboutUs from "@/pages/AboutUs";
 import Contact from "@/pages/Contact";
 import FAQ from "@/pages/FAQ";
@@ -26,6 +27,7 @@ import Returns from "@/pages/Returns";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Checkout from "@/pages/Checkout";
+import OrderDetail from "@/pages/OrderDetail";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -48,7 +50,9 @@ const App: React.FC = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/account" element={<Account />} />
+                <Route path="/order/:id" element={<OrderDetail />} />
                 <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<BlogDetail />} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/faq" element={<FAQ />} />
