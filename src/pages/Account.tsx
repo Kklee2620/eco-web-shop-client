@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -163,6 +162,7 @@ const Account: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const [activeTab, setActiveTab] = useState('orders'); // State to track active tab
   const [profileForm, setProfileForm] = useState({
     name: '',
     email: '',
@@ -240,7 +240,7 @@ const Account: React.FC = () => {
   return (
     <Layout>
       <div className="container-custom py-12">
-        <div className="flex flex-col md:flex-row gap-8">
+        <Tabs defaultValue="orders" value={activeTab} onValueChange={setActiveTab} className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
           <div className="w-full md:w-64 flex-shrink-0">
             <div className="bg-white p-5 rounded-lg border mb-6">
@@ -279,275 +279,273 @@ const Account: React.FC = () => {
           
           {/* Main content */}
           <div className="flex-1">
-            <Tabs defaultValue="orders" className="w-full">
-              {/* Orders tab */}
-              <TabsContent value="orders">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Đơn hàng của tôi</CardTitle>
-                    <CardDescription>Xem lịch sử và trạng thái đơn hàng của bạn.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {orders.length > 0 ? (
-                      <div className="space-y-4">
-                        {orders.map((order) => (
-                          <div 
-                            key={order.id}
-                            className="border rounded-lg p-4 hover:border-eco-primary transition-colors"
-                          >
-                            <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                              <div>
-                                <p className="font-medium">{order.orderNumber}</p>
-                                <p className="text-sm text-gray-500">{formatDate(order.date)}</p>
-                              </div>
-                              <Badge 
-                                variant="outline"
-                                className={getStatusColor(order.status)}
-                              >
-                                {getStatusText(order.status)}
-                              </Badge>
-                            </div>
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                              <div>
-                                <p className="text-sm">{order.items} sản phẩm</p>
-                                <p className="font-medium">{formatPrice(order.total)}</p>
-                              </div>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                className="flex items-center"
-                              >
-                                Chi tiết <ChevronRight className="h-4 w-4 ml-1" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                        <h3 className="font-medium text-lg mb-1">Chưa có đơn hàng nào</h3>
-                        <p className="text-gray-500 mb-4">Bạn chưa đặt đơn hàng nào</p>
-                        <Button>Mua sắm ngay</Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* Addresses tab */}
-              <TabsContent value="addresses">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Địa chỉ của tôi</CardTitle>
-                    <CardDescription>Quản lý địa chỉ giao hàng của bạn.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
+            {/* Orders tab */}
+            <TabsContent value="orders">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Đơn hàng của tôi</CardTitle>
+                  <CardDescription>Xem lịch sử và trạng thái đơn hàng của bạn.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {orders.length > 0 ? (
                     <div className="space-y-4">
-                      {addresses.map((address) => (
+                      {orders.map((order) => (
                         <div 
-                          key={address.id}
-                          className={`border rounded-lg p-4 ${address.isDefault ? 'border-eco-primary bg-eco-light/20' : 'hover:border-gray-300'}`}
+                          key={order.id}
+                          className="border rounded-lg p-4 hover:border-eco-primary transition-colors"
                         >
-                          <div className="flex items-start justify-between">
+                          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                             <div>
-                              <div className="flex items-center gap-2">
-                                <p className="font-medium">{address.fullName}</p>
-                                {address.isDefault && (
-                                  <Badge variant="outline" className="bg-eco-light text-eco-primary border-eco-primary">
-                                    Mặc định
-                                  </Badge>
-                                )}
-                              </div>
-                              <p className="text-sm">{address.phone}</p>
-                              <p className="text-sm text-gray-600 mt-2">{address.address}, {address.ward}, {address.district}, {address.city}</p>
+                              <p className="font-medium">{order.orderNumber}</p>
+                              <p className="text-sm text-gray-500">{formatDate(order.date)}</p>
                             </div>
-                            <div className="flex flex-col gap-2">
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </div>
+                            <Badge 
+                              variant="outline"
+                              className={getStatusColor(order.status)}
+                            >
+                              {getStatusText(order.status)}
+                            </Badge>
                           </div>
-                          {!address.isDefault && (
-                            <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
-                              <Button
-                                variant="link"
-                                className="text-eco-primary p-0 h-auto"
-                                onClick={() => handleSetDefaultAddress(address.id)}
-                              >
-                                Đặt làm địa chỉ mặc định
-                              </Button>
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                              <p className="text-sm">{order.items} sản phẩm</p>
+                              <p className="font-medium">{formatPrice(order.total)}</p>
                             </div>
-                          )}
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="flex items-center"
+                            >
+                              Chi tiết <ChevronRight className="h-4 w-4 ml-1" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
-                    <Button className="w-full mt-4">
-                      Thêm địa chỉ mới
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* Wishlist tab */}
-              <TabsContent value="wishlist">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Sản phẩm yêu thích</CardTitle>
-                    <CardDescription>Các sản phẩm bạn đã đánh dấu yêu thích.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {wishlist.length > 0 ? (
-                      <div className="space-y-4">
-                        {wishlist.map((item) => (
-                          <div key={item.id} className="flex border rounded-lg overflow-hidden">
-                            <div className="w-24 h-24">
-                              <img 
-                                src={item.imageUrl} 
-                                alt={item.name} 
-                                className="w-full h-full object-cover"
+                  ) : (
+                    <div className="text-center py-8">
+                      <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <h3 className="font-medium text-lg mb-1">Chưa có đơn hàng nào</h3>
+                      <p className="text-gray-500 mb-4">Bạn chưa đặt đơn hàng nào</p>
+                      <Button>Mua sắm ngay</Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Addresses tab */}
+            <TabsContent value="addresses">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Địa chỉ của tôi</CardTitle>
+                  <CardDescription>Quản lý địa chỉ giao hàng của bạn.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {addresses.map((address) => (
+                      <div 
+                        key={address.id}
+                        className={`border rounded-lg p-4 ${address.isDefault ? 'border-eco-primary bg-eco-light/20' : 'hover:border-gray-300'}`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">{address.fullName}</p>
+                              {address.isDefault && (
+                                <Badge variant="outline" className="bg-eco-light text-eco-primary border-eco-primary">
+                                  Mặc định
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm">{address.phone}</p>
+                            <p className="text-sm text-gray-600 mt-2">{address.address}, {address.ward}, {address.district}, {address.city}</p>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        {!address.isDefault && (
+                          <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
+                            <Button
+                              variant="link"
+                              className="text-eco-primary p-0 h-auto"
+                              onClick={() => handleSetDefaultAddress(address.id)}
+                            >
+                              Đặt làm địa chỉ mặc định
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <Button className="w-full mt-4">
+                    Thêm địa chỉ mới
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Wishlist tab */}
+            <TabsContent value="wishlist">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sản phẩm yêu thích</CardTitle>
+                  <CardDescription>Các sản phẩm bạn đã đánh dấu yêu thích.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {wishlist.length > 0 ? (
+                    <div className="space-y-4">
+                      {wishlist.map((item) => (
+                        <div key={item.id} className="flex border rounded-lg overflow-hidden">
+                          <div className="w-24 h-24">
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-1 p-4 flex flex-col">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h3 className="font-medium">{item.name}</h3>
+                                <p className="text-eco-primary font-medium mt-1">{formatPrice(item.price)}</p>
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                className="h-8 w-8 text-gray-500 hover:text-red-500"
+                                onClick={() => handleRemoveWishlistItem(item.id)}
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                              </Button>
+                            </div>
+                            <div className="mt-auto pt-2 flex items-center">
+                              <Badge variant={item.inStock ? 'outline' : 'secondary'} className="text-xs">
+                                {item.inStock ? 'Còn hàng' : 'Hết hàng'}
+                              </Badge>
+                              <Button 
+                                variant="outline"
+                                size="sm" 
+                                disabled={!item.inStock}
+                                className="ml-auto"
+                              >
+                                Thêm vào giỏ
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Heart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <h3 className="font-medium text-lg mb-1">Chưa có sản phẩm yêu thích</h3>
+                      <p className="text-gray-500 mb-4">Bạn chưa đánh dấu sản phẩm yêu thích nào</p>
+                      <Button>Khám phá sản phẩm</Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Profile tab */}
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Thông tin tài khoản</CardTitle>
+                  <CardDescription>Quản lý thông tin cá nhân và mật khẩu của bạn.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Tabs defaultValue="info">
+                    <TabsList className="mb-4">
+                      <TabsTrigger value="info">Thông tin cá nhân</TabsTrigger>
+                      <TabsTrigger value="password">Đổi mật khẩu</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="info">
+                      <form onSubmit={handleProfileSubmit}>
+                        <div className="space-y-4">
+                          <div className="flex gap-4 items-center mb-6">
+                            <Avatar className="h-16 w-16">
+                              <AvatarImage src={user?.avatarUrl} alt={user?.name || 'User'} />
+                              <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <Button type="button" variant="outline" size="sm">
+                                Thay đổi
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="name">Họ và tên</Label>
+                              <Input
+                                id="name"
+                                value={profileForm.name}
+                                onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
                               />
                             </div>
-                            <div className="flex-1 p-4 flex flex-col">
-                              <div className="flex items-start justify-between">
-                                <div>
-                                  <h3 className="font-medium">{item.name}</h3>
-                                  <p className="text-eco-primary font-medium mt-1">{formatPrice(item.price)}</p>
-                                </div>
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon"
-                                  className="h-8 w-8 text-gray-500 hover:text-red-500"
-                                  onClick={() => handleRemoveWishlistItem(item.id)}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                                </Button>
-                              </div>
-                              <div className="mt-auto pt-2 flex items-center">
-                                <Badge variant={item.inStock ? 'outline' : 'secondary'} className="text-xs">
-                                  {item.inStock ? 'Còn hàng' : 'Hết hàng'}
-                                </Badge>
-                                <Button 
-                                  variant="outline"
-                                  size="sm" 
-                                  disabled={!item.inStock}
-                                  className="ml-auto"
-                                >
-                                  Thêm vào giỏ
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Heart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                        <h3 className="font-medium text-lg mb-1">Chưa có sản phẩm yêu thích</h3>
-                        <p className="text-gray-500 mb-4">Bạn chưa đánh dấu sản phẩm yêu thích nào</p>
-                        <Button>Khám phá sản phẩm</Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* Profile tab */}
-              <TabsContent value="profile">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Thông tin tài khoản</CardTitle>
-                    <CardDescription>Quản lý thông tin cá nhân và mật khẩu của bạn.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Tabs defaultValue="info">
-                      <TabsList className="mb-4">
-                        <TabsTrigger value="info">Thông tin cá nhân</TabsTrigger>
-                        <TabsTrigger value="password">Đổi mật khẩu</TabsTrigger>
-                      </TabsList>
-                      
-                      <TabsContent value="info">
-                        <form onSubmit={handleProfileSubmit}>
-                          <div className="space-y-4">
-                            <div className="flex gap-4 items-center mb-6">
-                              <Avatar className="h-16 w-16">
-                                <AvatarImage src={user?.avatarUrl} alt={user?.name || 'User'} />
-                                <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <Button type="button" variant="outline" size="sm">
-                                  Thay đổi
-                                </Button>
-                              </div>
-                            </div>
                             
-                            <div className="grid grid-cols-1 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="name">Họ và tên</Label>
-                                <Input
-                                  id="name"
-                                  value={profileForm.name}
-                                  onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                                />
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                  id="email"
-                                  type="email"
-                                  value={profileForm.email}
-                                  onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
-                                  disabled
-                                />
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <Label htmlFor="phone">Số điện thoại</Label>
-                                <Input
-                                  id="phone"
-                                  value={profileForm.phone}
-                                  onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex justify-end mt-6">
-                            <Button type="submit">Cập nhật</Button>
-                          </div>
-                        </form>
-                      </TabsContent>
-                      
-                      <TabsContent value="password">
-                        <form onSubmit={handlePasswordSubmit}>
-                          <div className="space-y-4">
                             <div className="space-y-2">
-                              <Label htmlFor="current-password">Mật khẩu hiện tại</Label>
-                              <Input id="current-password" type="password" />
+                              <Label htmlFor="email">Email</Label>
+                              <Input
+                                id="email"
+                                type="email"
+                                value={profileForm.email}
+                                onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                                disabled
+                              />
                             </div>
                             
                             <div className="space-y-2">
-                              <Label htmlFor="new-password">Mật khẩu mới</Label>
-                              <Input id="new-password" type="password" />
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label htmlFor="confirm-password">Xác nhận mật khẩu</Label>
-                              <Input id="confirm-password" type="password" />
+                              <Label htmlFor="phone">Số điện thoại</Label>
+                              <Input
+                                id="phone"
+                                value={profileForm.phone}
+                                onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                              />
                             </div>
                           </div>
-                          <div className="flex justify-end mt-6">
-                            <Button type="submit">Cập nhật mật khẩu</Button>
+                        </div>
+                        <div className="flex justify-end mt-6">
+                          <Button type="submit">Cập nhật</Button>
+                        </div>
+                      </form>
+                    </TabsContent>
+                    
+                    <TabsContent value="password">
+                      <form onSubmit={handlePasswordSubmit}>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="current-password">Mật khẩu hiện tại</Label>
+                            <Input id="current-password" type="password" />
                           </div>
-                        </form>
-                      </TabsContent>
-                    </Tabs>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="new-password">Mật khẩu mới</Label>
+                            <Input id="new-password" type="password" />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="confirm-password">Xác nhận mật khẩu</Label>
+                            <Input id="confirm-password" type="password" />
+                          </div>
+                        </div>
+                        <div className="flex justify-end mt-6">
+                          <Button type="submit">Cập nhật mật khẩu</Button>
+                        </div>
+                      </form>
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </div>
-        </div>
+        </Tabs>
       </div>
     </Layout>
   );
